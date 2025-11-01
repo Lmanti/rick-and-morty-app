@@ -1,0 +1,79 @@
+services:
+  rick-morty-db:
+    image: postgres:16-alpine
+    container_name: rick-morty-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - rick-morty-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+    - rm_network
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+    - rm_network
+
+  backend:
+    build: ./rick-and-morty-backend
+    container_name: rickmorty-backend
+    restart: always
+    depends_on:
+      rick-morty-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PREFIX: ${REDIS_PREFIX}
+      PORT: ${BACKEND_PORT}
+    volumes:
+      - ./rick-and-morty-backend:/app
+      - /app/node_modules
+    ports:
+      - "4000:4000"
+    command: sh -c "
+      set -e &&
+      echo '⏳ Waiting for DB...' &&
+      until nc -z rick-morty-db 5432; do sleep 1; done &&
+      echo '✅ DB ready' &&
+      echo '📦 Running migrations...' &&
+      npx sequelize db:migrate &&
+      echo '📦 Running seeds...' &&
+      npm run seed &&
+      echo '🚀 Starting dev server...' &&
+      npm run dev"
+    networks:
+      - rm_network
+
+networks:
+  rm_network:
+    driver: bridge
+
+volumes:
+  rick-morty-db:
