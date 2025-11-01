@@ -32,7 +32,9 @@ let capsEntries = entries.map((entry) => [
 ]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-// const { Character } = sequelize.models
+Object.values(sequelize.models).forEach((model) => {
+  if (model.associate && typeof model.associate === 'function') model.associate(sequelize.models);
+});
 
 module.exports = {
     ...sequelize.models,

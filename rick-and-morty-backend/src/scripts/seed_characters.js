@@ -1,19 +1,60 @@
 const axios = require('axios');
-const { conn, Character } = require('../db');
+const { conn, Character, Gender, Status, Species, Location } = require('../db');
 
 async function fetchFirstNCharacters(n = 15) {
-//   const perPage = 20;
-    let page = 1;
-    let collected = [];
-    while (collected.length < n) {
-        const res = await axios.get(`https://rickandmortyapi.com/api/character?page=${page}`);
-        const results = res.data.results || [];
-        collected.push(...results);
-        if (!res.data.info.next) break;
-        page++;
+    const charactersIds = Array.from({ length: n }, (_, i) => i + 1);
+    const res = await axios.get(`https://rickandmortyapi.com/api/character/${charactersIds.join(',')}`);
+    const results = res.data || [];
+    return results;
+}
+
+async function syncGenders(uniqueGenders) {
+    for (const g of uniqueGenders) {
+        await Gender.findOrCreate({ where: { name: g } });
     }
-    console.log(collected);
-    return collected.slice(0, n);
+}
+
+async function syncStatuses(uniqueStatuses) {
+    for (const s of uniqueStatuses) {
+        await Status.findOrCreate({ where: { name: s } });
+    }
+}
+
+async function syncSpecies(uniqueSpecies) {
+    for (const s of uniqueSpecies) {
+        await Species.findOrCreate({ where: { name: s } });
+    }
+}
+
+async function syncLocations(uniqueLocations) {
+    for (const l of uniqueLocations) {
+        await Location.findOrCreate({ where: { name: l?.name, url: l?.url } });
+    }
+}
+
+async function syncCharacters(characters) {
+    for (const c of characters) {
+        const gender = await Gender.findOne({ where: { name: c.gender } });
+        const status = await Status.findOne({ where: { name: c.status } });
+        const species = await Species.findOne({ where: { name: c.species } });
+        const origin = await Location.findOne({ where: { name: c.origin?.name }, include: ['natives'] });
+        const location = await Location.findOne({ where: { name: c.location?.name }, include: ['residents'] });
+        const episodeCount = Array.isArray(c.episode) ? c.episode.length : 0;
+
+        await Character.upsert({
+            rmId: c.id,
+            name: c.name,
+            statusId: status?.id || null,
+            speciesId: species?.id || null,
+            genderId: gender?.id || null,
+            type: c.type || null,
+            originId: origin?.id || null,
+            locationId: location?.id || null,
+            image: c.image,
+            episodeCount
+        });
+        console.log(`Inserted/Updated ${c.name}`);
+    }
 }
 
 async function run() {
@@ -21,27 +62,24 @@ async function run() {
         await conn.sync();
         console.log('✅ DB synced');
 
-        const chars = await fetchFirstNCharacters(15);
-        for (const c of chars) {
-            const episodeCount = Array.isArray(c.episode) ? c.episode.length : 0;
-            await Character.upsert({
-                rmId: c.id,
-                name: c.name,
-                status: c.status,
-                species: c.species,
-                type: c.type || null,
-                gender: c.gender,
-                origin: c.origin?.name || null,
-                location: c.location?.name || null,
-                image: c.image,
-                episodeCount
-            });
-            console.log(`Inserted/Updated ${c.name}`);
-        }
-        console.log('Seed complete');
+        const characters = await fetchFirstNCharacters();
+        const uniqueGenders = [...new Set(characters.map(c => c.gender))];
+        const uniqueStatuses = [...new Set(characters.map(c => c.status))];
+        const uniqueSpecies = [...new Set(characters.map(c => c.species))];
+        const uniqueLocations = [...new Map(characters.map(c => [c.location?.name, c.location])).values()];
+        const uniqueOrigins = [...new Map(characters.map(c => [c.origin?.name, c.origin])).values()];
+        
+        await syncGenders(uniqueGenders);
+        await syncStatuses(uniqueStatuses);
+        await syncSpecies(uniqueSpecies);
+        await syncLocations(uniqueLocations);
+        await syncLocations(uniqueOrigins);
+        await syncCharacters(characters);
+
+        console.log('✅ Seed complete');
         process.exit(0);
     } catch (err) {
-        console.error('Seed failed:', err);
+        console.error('❌ Seed failed:', err);
         process.exit(1);
     }
 }
