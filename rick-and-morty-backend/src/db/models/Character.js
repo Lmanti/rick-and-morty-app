@@ -11,23 +11,37 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        status: {
-            type: DataTypes.STRING
+        statusId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'Statuses',
+                key: 'id'
+            }
         },
-        species: {
-            type: DataTypes.STRING
+         speciesId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'Species',
+                key: 'id'
+            }
         },
         type: {
             type: DataTypes.STRING
         },
-        gender: {
-            type: DataTypes.STRING
+        genderId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: 'Genders',
+                key: 'id'
+            }
         },
-        origin: {
-            type: DataTypes.STRING
+        originId: {
+            type: DataTypes.INTEGER,
+            references: { model: 'Locations', key: 'id' },
         },
-        location: {
-            type: DataTypes.STRING
+        locationId: {
+            type: DataTypes.INTEGER,
+            references: { model: 'Locations', key: 'id' },
         },
         image: {
             type: DataTypes.STRING
@@ -40,6 +54,14 @@ module.exports = (sequelize) => {
         tableName: 'Characters',
         timestamps: true
     });
+
+    Character.associate = (models) => {
+        Character.belongsTo(models.Gender, { foreignKey: 'genderId', as: 'gender' });
+        Character.belongsTo(models.Status, { foreignKey: 'statusId', as: 'status' });
+        Character.belongsTo(models.Species, { foreignKey: 'speciesId', as: 'species' });
+        Character.belongsTo(models.Location, { foreignKey: 'originId', as: 'origin' });
+        Character.belongsTo(models.Location, { foreignKey: 'locationId', as: 'location' });
+    };
 
     return Character;
 };
