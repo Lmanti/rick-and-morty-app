@@ -39,17 +39,31 @@ const typeDefs = gql`
         episodeCount: Int
     }
 
+    type FilterOptions {
+        speciesOptions: [String!]!
+        statusOptions: [String!]!
+        genderOptions: [String!]!
+        originOptions: [String!]!
+    }
+    
+    enum SortOrder {
+        ASC
+        DESC
+    }
+
     input CharacterFilter {
         name: String
         status: String
         species: String
         gender: String
         origin: String
+        sort: SortOrder
     }
 
     type Query {
         characters(filter: CharacterFilter): [Character!]!
         character(id: Int!): Character
+        filterOptions: FilterOptions!
     }
 `;
 

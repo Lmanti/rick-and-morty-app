@@ -1,6 +1,6 @@
 const { Character, Gender, Status, Species, Location } = require('../db');
 const { Op } = require('sequelize');
-const { cacheKeyForFilters, setToRedis, getFromRedis } = require('../redis')
+const { cacheKeyForFilters, setToRedis, getFromRedis } = require('../redis');
 
 async function prepareWhereStatement(filters) {
     const where = {};
@@ -43,7 +43,7 @@ async function getCharacters(filters = {}) {
 
     const characters = await Character.findAll({
         where,
-        order: [['name', 'ASC']],
+        order: [['name', filters.sort === 'DESC' ? 'DESC' : 'ASC']],
         include: [
             { model: Gender, as: 'gender' },
             { model: Status, as: 'status' },

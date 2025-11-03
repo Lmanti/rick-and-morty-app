@@ -5,19 +5,22 @@ import { client } from './graphql/client';
 import { store } from './redux/store';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
+import { FiltersProvider } from './context/FiltersContext';
 
 function App() {
   return (
     <Provider store={store}>
       <ApolloProvider client={client}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="character/:id" element={<Home />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <FiltersProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="character/:id" element={<Home />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </FiltersProvider>
       </ApolloProvider>
     </Provider>
   );
