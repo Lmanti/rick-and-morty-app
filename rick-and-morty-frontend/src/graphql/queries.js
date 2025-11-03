@@ -6,7 +6,16 @@ export const GET_CHARACTERS = gql`
       id
       name
       image
+      status {
+        name
+      }
       species {
+        name
+      }
+      gender {
+        name
+      }
+      origin {
         name
       }
     }
@@ -36,6 +45,17 @@ export const GET_CHARACTER = gql`
         name
       }
       episodeCount
+    }
+  }
+`;
+
+export const GET_FILTER_OPTIONS = gql`
+  query GetFilterOptions {
+    filterOptions {
+      speciesOptions
+      statusOptions
+      genderOptions
+      originOptions
     }
   }
 `;

@@ -1,22 +1,15 @@
 import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import { selectActiveFilters, selectFilterSections, updateActiveFilter } from '../../redux/slices/filterSlice';
 
-export const FilterDropdown = ({ isOpen, onClose, anchorRef }) => {
+export const FilterDropdown = ({ isOpen, onClose, anchorRef, sections, activeFilters, onApplyFilters }) => {
   const dropdownRef = useRef(null);
-  const dispatch = useAppDispatch();
-  
-  const filters = useAppSelector(selectActiveFilters);
-  const filterSections = useAppSelector(selectFilterSections);
-  
   const [tempFilters, setTempFilters] = useState({});
 
   useEffect(() => {
     if (isOpen) {
-      setTempFilters(filters);
+      setTempFilters(activeFilters || {});
     }
-  }, [isOpen, filters]);
+  }, [isOpen, activeFilters]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -45,7 +38,7 @@ export const FilterDropdown = ({ isOpen, onClose, anchorRef }) => {
 
   const handleApplyFilters = () => {
     Object.entries(tempFilters).forEach(([key, value]) => {
-      dispatch(updateActiveFilter({ key, value }));
+      onApplyFilters(key, value);
     });
     onClose();
   };
@@ -62,7 +55,7 @@ export const FilterDropdown = ({ isOpen, onClose, anchorRef }) => {
       </div>
       <div className="p-4 space-y-4">
         {
-          filterSections.map((section) => {
+          sections.map((section) => {
             const totalOptions = section.options.length + 1;
             const gridCols = totalOptions <= 3 ? 'grid-cols-2' : 'grid-cols-3';
             return (

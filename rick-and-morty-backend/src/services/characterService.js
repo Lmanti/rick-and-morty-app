@@ -1,6 +1,6 @@
 const { Character, Gender, Status, Species, Location } = require('../db');
 const { Op } = require('sequelize');
-const { cacheKeyForFilters, setToRedis, getFromRedis } = require('../redis')
+const { cacheKeyForFilters, setToRedis, getFromRedis } = require('../redis');
 
 async function prepareWhereStatement(filters) {
     const where = {};

@@ -39,6 +39,13 @@ const typeDefs = gql`
         episodeCount: Int
     }
 
+    type FilterOptions {
+        speciesOptions: [String!]!
+        statusOptions: [String!]!
+        genderOptions: [String!]!
+        originOptions: [String!]!
+    } 
+
     input CharacterFilter {
         name: String
         status: String
@@ -50,6 +57,7 @@ const typeDefs = gql`
     type Query {
         characters(filter: CharacterFilter): [Character!]!
         character(id: Int!): Character
+        filterOptions: FilterOptions!
     }
 `;
 
