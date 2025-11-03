@@ -59,3 +59,25 @@ export const GET_FILTER_OPTIONS = gql`
     }
   }
 `;
+
+export const GET_COMMENTS = gql`
+  query GetComments($characterId: Int!) {
+    comments(characterId: $characterId) {
+      id
+      text
+      author
+      createdAt
+    }
+  }
+`;
+
+export const ADD_COMMENT = gql`
+  mutation AddComment($input: CommentInput!) {
+    addComment(input: $input) {
+      id
+      text
+      author
+      createdAt
+    }
+  }
+`;

@@ -1,6 +1,15 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
+    type Comment {
+        id: ID!
+        characterId: Int!
+        text: String!
+        author: String
+        createdAt: String!
+        updatedAt: String!
+    }
+
     type Location {
         id: ID!
         name: String!
@@ -37,6 +46,7 @@ const typeDefs = gql`
         location: Location
         image: String
         episodeCount: Int
+        comments: [Comment]
     }
 
     type FilterOptions {
@@ -49,6 +59,12 @@ const typeDefs = gql`
     enum SortOrder {
         ASC
         DESC
+    }
+
+    input CommentInput {
+        characterId: Int!
+        text: String!
+        author: String
     }
 
     input CharacterFilter {
@@ -64,6 +80,11 @@ const typeDefs = gql`
         characters(filter: CharacterFilter): [Character!]!
         character(id: Int!): Character
         filterOptions: FilterOptions!
+        comments(characterId: Int!): [Comment!]!
+    }
+
+    type Mutation {
+        addComment(input: CommentInput!): Comment!
     }
 `;
 
