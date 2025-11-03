@@ -1,6 +1,10 @@
 # Node modules
 **/node_modules/
 
+# Other dependencies
+**/.pnp
+**/.pnp.js
+
 # Logs
 **/logs/
 *.log
@@ -10,6 +14,9 @@ yarn-error.log*
 
 # Env files
 **/.env
+
+# Testing
+**/coverage
 
 # OS
 .DS_Store
