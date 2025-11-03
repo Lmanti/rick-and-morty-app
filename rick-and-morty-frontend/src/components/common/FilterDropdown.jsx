@@ -23,13 +23,8 @@ export const FilterDropdown = ({ isOpen, onClose, anchorRef, sections, activeFil
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose, anchorRef]);
 
   const handleTempFilterChange = (key, value) => {
@@ -62,7 +57,7 @@ export const FilterDropdown = ({ isOpen, onClose, anchorRef, sections, activeFil
               <div key={section.key}>
                 <label className="block text-xs font-medium text-gray-600 mb-2"> {section.label} </label>
                 <div className={`grid ${gridCols} gap-2`}>
-                  <button onClick={() => handleTempFilterChange(section.key, '')} className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${ tempFilters[section.key] === '' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`} >
+                  <button hidden={section.key === 'sort'} onClick={() => handleTempFilterChange(section.key, '')} className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${ tempFilters[section.key] === '' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }`} >
                     All
                   </button>
                   {

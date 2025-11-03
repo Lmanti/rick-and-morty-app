@@ -15,7 +15,8 @@ export const CharacterFilters = () => {
     filterSections
   } = useFiltersContext();
 
-  const hasActiveFilters = Object.values(activeFilters).some(v => v !== '');
+  const hasActiveFilters = Object.entries(activeFilters)
+    .some(([key, value]) => value !== '' && !(key === 'sort' && value === 'ASC'));
 
   return (
     <div>

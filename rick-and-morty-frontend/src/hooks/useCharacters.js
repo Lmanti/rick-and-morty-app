@@ -13,6 +13,7 @@ export const useCharacters = () => {
         gender: activeFilters.gender || undefined,
         species: activeFilters.species || undefined,
         origin: activeFilters.origin || undefined,
+        sort: activeFilters.sort || undefined
       }
     },
     notifyOnNetworkStatusChange: true

@@ -68,6 +68,31 @@ services:
       npm run seed &&
       echo '🚀 Starting dev server...' &&
       npm run dev"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - rm_network
+  
+  frontend:
+    build: ./rick-and-morty-frontend
+    container_name: rickmorty-frontend
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      REACT_APP_GRAPHQL_URI: ${API_GRAPHQL_URL}
+      PORT: ${FRONTEND_PORT}
+    volumes:
+      - ./rick-and-morty-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: npm start
     networks:
       - rm_network
 

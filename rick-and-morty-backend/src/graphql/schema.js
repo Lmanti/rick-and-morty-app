@@ -44,7 +44,12 @@ const typeDefs = gql`
         statusOptions: [String!]!
         genderOptions: [String!]!
         originOptions: [String!]!
-    } 
+    }
+    
+    enum SortOrder {
+        ASC
+        DESC
+    }
 
     input CharacterFilter {
         name: String
@@ -52,6 +57,7 @@ const typeDefs = gql`
         species: String
         gender: String
         origin: String
+        sort: SortOrder
     }
 
     type Query {

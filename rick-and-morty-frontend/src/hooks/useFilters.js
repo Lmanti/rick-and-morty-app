@@ -56,12 +56,22 @@ export const useFilters = () => {
       });
     }
 
+    sections.push({
+      key: 'sort',
+      label: 'Sort',
+      options: [
+        { value: 'ASC', label: 'A-Z' },
+        { value: 'DESC', label: 'Z-A' }
+      ]
+    });
+
     setFiltersSections(sections);
 
     const initialFilters = sections.reduce((acc, section) => {
-      acc[section.key] = '';
+      acc[section.key] = section.key === 'sort' ? 'ASC' : '';
       return acc;
     }, {});
+    
     setActiveFilters(initialFilters);
   }, [filterOptionsData]);
 
@@ -75,7 +85,7 @@ export const useFilters = () => {
   const clearFilters = useCallback(() => {
     setActiveFilters(prev =>
       Object.keys(prev).reduce((acc, key) => {
-        acc[key] = '';
+        acc[key] = key === 'sort' ? 'ASC' : '';
         return acc;
       }, {})
     );

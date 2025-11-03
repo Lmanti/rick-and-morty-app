@@ -43,7 +43,7 @@ async function getCharacters(filters = {}) {
 
     const characters = await Character.findAll({
         where,
-        order: [['name', 'ASC']],
+        order: [['name', filters.sort === 'DESC' ? 'DESC' : 'ASC']],
         include: [
             { model: Gender, as: 'gender' },
             { model: Status, as: 'status' },
