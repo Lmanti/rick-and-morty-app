@@ -6,6 +6,7 @@ import { Loading } from '../common/Loading';
 import { Error } from '../common/Error';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { toggleStarred, selectIsStarred } from '../../redux/slices/starredSlice';
+import { CommentsSection } from '../common/CommentsSection';
 
 export const CharacterDetail = () => {
   const { id } = useParams();
@@ -99,6 +100,10 @@ export const CharacterDetail = () => {
           <div className="border-t pt-2">
             <h3 className="text-sm font-semibold text-gray-900 mb-1">Appearances</h3>
             <p className="text-gray-500">{character.episodeCount} episode(s)</p>
+          </div>
+          <div className="border-t pt-2">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Comments</h3>
+            <CommentsSection characterId={character.id} />
           </div>
         </div>
       </div>

@@ -17,6 +17,11 @@ This application is a full-stack Rick and Morty character explorer. Users can br
 
 ---
 
+## ERD
+![ERD Diagram](./erd.png)
+
+---
+
 ## Getting Started
 
 ### Prerequisites
